@@ -14,5 +14,5 @@
 | Detail | Topic Name | Type |
 | :--- | :---- | :---- |
 | `velocity` | /decision_interface/control/velocity | geometry_msgs::msg::Pose2D |
-| `rotation` | /decision_interface/control/rotation | std_msgs::msg::Int32> |
+| `rotation` | /decision_interface/control/rotation | std_msgs::msg::Int32 |
 | `gimbal` | /decision_interface/control/gimbal | geometry_msgs::msg::Vector3 |
