@@ -16,6 +16,7 @@ enum class NodeType {
 struct Node {
     int x;
     int y;
+    float height;
     int8_t value;
     NodeType type;
 };
@@ -57,11 +58,12 @@ public:
         data_.resize(length_ * width_);
         for (auto x = 0; x < width_; x++)
             for (auto y = 0; y < length_; y++) {
-                auto& node = data_[x + y * width_];
-                node.type  = type::NodeType::NONE;
-                node.value = 0;
-                node.x     = x;
-                node.y     = y;
+                auto& node  = data_[x + y * width_];
+                node.type   = type::NodeType::NONE;
+                node.height = 0;
+                node.value  = 0;
+                node.x      = x;
+                node.y      = y;
             }
     }
 

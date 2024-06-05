@@ -13,7 +13,7 @@
 
 class Process {
 public:
-    Process(float grid_width, float resolution, float lidar_blind, float height_wight, int grid_number);
+    Process();
 
     void info(const bool& flag) noexcept { enable_info_ = flag; }
     void info(const std::string& string) const;
@@ -22,8 +22,9 @@ public:
     std::unique_ptr<type::NodeMap> generate_cost_map(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud);
 
 private:
-    bool enable_info_ = false;
+    bool enable_info_ = true;
 
+public:
     float grid_width_;
     float resolution_;
     float lidar_blind_;

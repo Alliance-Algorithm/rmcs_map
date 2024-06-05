@@ -17,15 +17,15 @@ param_server:
       frame:
         map: "yaw_link"
     # process config
-    generate:
+    switch:
       cost_map: false
+      publish_transformed_cloud: true
     lidar:
       livox_frames: 1
     grid:
       resolution: 0.05
       grid_width: 6.06
       lidar_blind: 0.8
-      z_wight: 3.1
-    filter:
+      height_wight: 120.0
       ground_height: 0.2
 

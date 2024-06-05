@@ -43,6 +43,15 @@ DecisionInterfaceNode::DecisionInterfaceNode()
         param::get<std::string>("name.lidar"), 10, [this](const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg) {
             livox_subscription_callback(msg);
         });
+
+    process_ = std::make_shared<Process>();
+
+    process_->grid_width_    = param::get<float>("grid.grid_width");
+    process_->resolution_    = param::get<float>("grid.resolution");
+    process_->lidar_blind_   = param::get<float>("grid.lidar_blind");
+    process_->height_wight_  = param::get<float>("grid.height_wight");
+    process_->ground_height_ = param::get<float>("grid.ground_height");
+    process_->grid_number_   = static_cast<int>(param::get<float>("grid.grid_width") / param::get<float>("grid.resolution"));
 }
 
 void DecisionInterfaceNode::velocity_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Pose2D>& msg) { }
@@ -51,6 +60,9 @@ void DecisionInterfaceNode::gimbal_subscription_callback(const std::unique_ptr<g
 
 void DecisionInterfaceNode::livox_subscription_callback(const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg)
 {
+    static auto publish_transformed_cloud = param::get<bool>("switch.publish_transformed_cloud");
+    static auto map_frame_id              = param::get<std::string>("name.frame.map");
+
     // make standard pointcloud
     auto pointcloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
     ros2::convert::livox_to_pcl(msg->points, *pointcloud);
@@ -64,14 +76,25 @@ void DecisionInterfaceNode::livox_subscription_callback(const std::unique_ptr<li
     auto pointcloud2 = std::make_shared<sensor_msgs::msg::PointCloud2>();
     ros2::convert::pcl_to_pc2(*pointcloud, *pointcloud2);
 
+    pointcloud2->header.frame_id = map_frame_id;
     pointcloud2->header.stamp    = msg->header.stamp;
-    pointcloud2->header.frame_id = param::get<std::string>("name.frame.map");
 
-    // auto grid_map = std::make_shared<nav_msgs::msg::OccupancyGrid>();
-    // ros2::convert::node_to_grid_map(*process_->generate_node_map(pointcloud), *grid_map);
+    if (publish_transformed_cloud)
+        cloud_publisher_->publish(*pointcloud2);
 
-    // grid_map->header.frame_id = param::name::map_link_name;
-    // grid_map->header.stamp    = msg->header.stamp;
+    // generate grid map
+    auto grid_map = std::make_shared<nav_msgs::msg::OccupancyGrid>();
+    auto node_map = process_->generate_node_map(pointcloud);
+    ros2::convert::node_to_grid_map(*node_map, *grid_map);
 
-    cloud_publisher_->publish(*pointcloud2);
+    grid_map->header.frame_id = map_frame_id;
+    grid_map->header.stamp    = msg->header.stamp;
+    grid_map->info.height     = process_->grid_number_;
+    grid_map->info.width      = process_->grid_number_;
+    grid_map->info.resolution = process_->resolution_;
+
+    grid_map->info.origin.position.x = -process_->grid_width_ / 2.0;
+    grid_map->info.origin.position.y = -process_->grid_width_ / 2.0;
+
+    grid_map_publisher_->publish(*grid_map);
 }
