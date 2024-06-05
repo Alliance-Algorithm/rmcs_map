@@ -1,16 +1,19 @@
 param_server:
   ros__parameters:
-    # topic names
-    names:
-      node: "decision_interface"
-      map:
-        grid: "/decision_interface/map/grid"
-        cost: "/decision_interface/map/cost"
+    name:
+      # publish
+      grid: "/decision_interface/map/grid"
+      cost: "/decision_interface/map/cost"
       status: "/decision_interface/status"
+      transformed_map: "/decision_interface/transformed_map"
+      # subscribe
       control:
         velocity: "/decision_interface/control/velocity"
         rotation: "/decision_interface/control/rotation"
         gimbal: "/decision_interface/control/gimbal"
+      lidar: "/livox/lidar"
+      # other
+      node: "decision_interface"
       frame:
         map: "yaw_link"
     # process config
@@ -18,16 +21,6 @@ param_server:
       cost_map: false
     lidar:
       livox_frames: 1
-    transform:
-      translation:
-        x: 0.0
-        y: 0.0
-        z: 0.6
-      quaternion:
-        x: 0.0
-        y: 1.0
-        z: 0.0
-        w: 1.0
     grid:
       resolution: 0.05
       grid_width: 6.06

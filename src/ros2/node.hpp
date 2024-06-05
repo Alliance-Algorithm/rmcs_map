@@ -1,31 +1,40 @@
 #include "map/process.hpp"
-#include "ros2/param.hpp"
 
-#include <decision_interface/msg/detail/game_status__struct.hpp>
-#include <geometry_msgs/msg/detail/vector3__struct.hpp>
-#include <nav_msgs/msg/detail/occupancy_grid__struct.hpp>
-#include <std_msgs/msg/detail/int32__struct.hpp>
+#include <decision_interface/msg/game_status.hpp>
+#include <geometry_msgs/msg/pose2_d.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
+#include <livox_ros_driver2/msg/custom_msg.hpp>
+#include <nav_msgs/msg/occupancy_grid.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <std_msgs/msg/int32.hpp>
 
 #include <rclcpp/node.hpp>
+#include <rclcpp/publisher.hpp>
+#include <rclcpp/subscription.hpp>
 
 #include <memory>
 
 class DecisionInterfaceNode : public rclcpp::Node {
 public:
-    DecisionInterfaceNode()
-        : Node("decision_interface", rclcpp::NodeOptions().allow_undeclared_parameters(true).automatically_declare_parameters_from_overrides(true))
-    {
-        param::load(*this);
-    }
+    DecisionInterfaceNode();
 
 private:
-    std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> grid_map_publisher;
-    std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> cost_map_publisher;
-    std::shared_ptr<rclcpp::Publisher<decision_interface::msg::GameStatus>> status_publisher;
+    std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> grid_map_publisher_;
+    std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> cost_map_publisher_;
+    std::shared_ptr<rclcpp::Publisher<decision_interface::msg::GameStatus>> status_publisher_;
+    std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2>> cloud_publisher_;
 
-    std::shared_ptr<rclcpp::Subscription<geometry_msgs::msg::Pose2D>> velocity_subscription;
-    std::shared_ptr<rclcpp::Subscription<std_msgs::msg::Int32>> rotation_subscription;
-    std::shared_ptr<rclcpp::Subscription<geometry_msgs::msg::Vector3>> gimbal_subscription;
+    std::shared_ptr<rclcpp::Subscription<geometry_msgs::msg::Pose2D>> velocity_subscription_;
+    std::shared_ptr<rclcpp::Subscription<std_msgs::msg::Int32>> rotation_subscription_;
+    std::shared_ptr<rclcpp::Subscription<geometry_msgs::msg::Vector3>> gimbal_subscription_;
+
+    std::shared_ptr<rclcpp::Subscription<livox_ros_driver2::msg::CustomMsg>> livox_subscription_;
 
     std::shared_ptr<Process> process_;
+
+private:
+    virtual void velocity_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Pose2D>& msg);
+    virtual void rotation_subscription_callback(const std::unique_ptr<std_msgs::msg::Int32>& msg);
+    virtual void gimbal_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Vector3>& msg);
+    void livox_subscription_callback(const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg);
 };

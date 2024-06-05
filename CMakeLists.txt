@@ -18,7 +18,6 @@ set(PACKAGES
     pcl_conversions
     pcl_ros
     # ros2 custom packages
-    decision_interface
     livox_ros_driver2
     # third party packages
     Eigen
@@ -44,23 +43,23 @@ endforeach()
 
 include_directories(${PACKAGES}_INCLUDE_DIR src)
 
-# exe for runtime
-add_executable(${PROJECT_NAME}_exe ${PROJECT_SOURCE} src/component.cpp)
-ament_target_dependencies(${PROJECT_NAME}_exe ${PACKAGES})
-install(TARGETS ${PROJECT_NAME}_exe DESTINATION lib/${PROJECT_NAME})
-
-# exe for test
-add_executable(${PROJECT_NAME}_test ${PROJECT_SOURCE} src/component.cpp)
-ament_target_dependencies(${PROJECT_NAME}_test ${PACKAGES})
-install(TARGETS ${PROJECT_NAME}_test DESTINATION lib/${PROJECT_NAME})
-
-# install directory
-install(DIRECTORY config msg launch DESTINATION share/${PROJECT_NAME})
-
 # generate custom message
 rosidl_generate_interfaces(
   ${PROJECT_NAME} msg/RobotStatus.msg msg/GameStatus.msg DEPENDENCIES
   builtin_interfaces geometry_msgs)
+rosidl_get_typesupport_target(CUSTOM_MESSAGE ${PROJECT_NAME}
+                              "rosidl_typesupport_cpp")
+
+# library for runtime
+
+# executable for test
+add_executable(${PROJECT_NAME}_test ${PROJECT_SOURCE} src/test.cpp)
+ament_target_dependencies(${PROJECT_NAME}_test ${PACKAGES})
+target_link_libraries(${PROJECT_NAME}_test ${CUSTOM_MESSAGE})
+install(TARGETS ${PROJECT_NAME}_test DESTINATION lib/${PROJECT_NAME})
+
+# install directory
+install(DIRECTORY config msg launch DESTINATION share/${PROJECT_NAME})
 
 # generate ament index for other package
 ament_package()

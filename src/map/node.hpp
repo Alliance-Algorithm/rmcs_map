@@ -29,21 +29,6 @@ public:
         reset();
     }
 
-    void reset()
-    {
-        data_.resize(length_ * width_);
-        for (auto x = 0; x < width_; x++)
-            for (auto y = 0; y < length_; y++) {
-                auto& node = data_[x + y * width_];
-                node.type  = type::NodeType::NONE;
-                node.value = 0;
-                node.x     = x;
-                node.y     = y;
-            }
-    }
-
-    /// @param x 0 ~ width-1
-    /// @param y 0 ~ length-1
     auto& operator()(size_t x, size_t y)
     {
         assert(x < width_);
@@ -55,6 +40,29 @@ public:
     auto& operator*()
     {
         return data_;
+    }
+
+    [[nodiscard]] size_t width() const
+    {
+        return width_;
+    }
+
+    [[nodiscard]] size_t length() const
+    {
+        return length_;
+    }
+
+    void reset()
+    {
+        data_.resize(length_ * width_);
+        for (auto x = 0; x < width_; x++)
+            for (auto y = 0; y < length_; y++) {
+                auto& node = data_[x + y * width_];
+                node.type  = type::NodeType::NONE;
+                node.value = 0;
+                node.x     = x;
+                node.y     = y;
+            }
     }
 
 private:

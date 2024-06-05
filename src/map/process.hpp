@@ -2,8 +2,9 @@
 
 #include "node.hpp"
 
-#include <Eigen/Eigen>
 #include <memory>
+
+#include <Eigen/Eigen>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -12,14 +13,21 @@
 
 class Process {
 public:
-    Process();
+    Process(float grid_width, float resolution, float lidar_blind, float height_wight, int grid_number);
 
     void info(const bool& flag) noexcept { enable_info_ = flag; }
     void info(const std::string& string) const;
 
-    static std::unique_ptr<type::NodeMap> generate_grid_map(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud);
-    static std::unique_ptr<type::NodeMap> generate_cost_map(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud);
+    std::unique_ptr<type::NodeMap> generate_node_map(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud);
+    std::unique_ptr<type::NodeMap> generate_cost_map(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud);
 
 private:
     bool enable_info_ = false;
+
+    float grid_width_;
+    float resolution_;
+    float lidar_blind_;
+    float height_wight_;
+    float ground_height_;
+    int grid_number_;
 };
