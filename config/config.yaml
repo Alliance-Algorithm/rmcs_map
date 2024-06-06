@@ -18,6 +18,8 @@ param_server:
         map: "yaw_link"
     # process config
     switch:
+      # livox | pointcloud2
+      pointcloud_type: "livox"
       cost_map: false
       publish_transformed_cloud: true
     lidar:
