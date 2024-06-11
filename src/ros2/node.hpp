@@ -1,3 +1,5 @@
+#pragma once
+
 #include "map/process.hpp"
 
 #include <decision_interface/msg/game_status.hpp>
@@ -11,6 +13,9 @@
 #include <rclcpp/node.hpp>
 #include <rclcpp/publisher.hpp>
 #include <rclcpp/subscription.hpp>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2_ros/transform_listener.h>
 
 #include <memory>
 
@@ -31,9 +36,12 @@ private:
     std::shared_ptr<rclcpp::Subscription<livox_ros_driver2::msg::CustomMsg>> livox_subscription_;
     std::shared_ptr<rclcpp::Subscription<sensor_msgs::msg::PointCloud2>> pointcloud_subscription_;
 
+    std::shared_ptr<tf2_ros::StaticTransformBroadcaster> static_transform_broadcaster_;
+
     std::shared_ptr<Process> process_;
 
 private:
+    void publish_static_transform();
     virtual void velocity_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Pose2D>& msg);
     virtual void rotation_subscription_callback(const std::unique_ptr<std_msgs::msg::Int32>& msg);
     virtual void gimbal_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Vector3>& msg);

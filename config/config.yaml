@@ -15,19 +15,22 @@ param_server:
       # other
       node: "decision_interface"
       frame:
-        map: "yaw_link"
+        map: "map_link"
+        lidar: "lidar_link"
     # process config
     switch:
       # livox | pointcloud2
       pointcloud_type: "livox"
       cost_map: false
+      grid_map: true
       publish_transformed_cloud: true
     lidar:
       livox_frames: 1
     grid:
       resolution: 0.05
-      grid_width: 6.06
+      grid_width: 10.0
       lidar_blind: 0.8
       height_wight: 120.0
       ground_height: 0.2
-
+    filter:
+      threshold: 70
