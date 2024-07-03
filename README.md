@@ -1,19 +1,16 @@
-# Decision Interface
+# RMCS Map
 
 ### Interface Table
 #### Publish
 
 | Detail | Topic Name | Type |
 | :--- | :---- | :---- |
-| `grid map` | /decision_interface/map/grid | nav_msgs::msg::OccupancyGrid |
-| `cost map` | /decision_interface/map/cost | nav_msgs::msg::OccupancyGrid |
-| `status` | /decision_interface/status | decision_interface::msg::GameStatus |
+| `grid map` | /rmcs_map/map/grid | nav_msgs::msg::OccupancyGrid |
+| `cost map` | /rmcs_map/map/cost | nav_msgs::msg::OccupancyGrid |
+| `status` | /rmcs_map/status | rmcs_map::msg::GameStatus |
 
 #### Subscribe
 
 | Detail | Topic Name | Type |
 | :--- | :---- | :---- |
-| `velocity` | /decision_interface/control/velocity | geometry_msgs::msg::Pose2D |
-| `rotation` | /decision_interface/control/rotation | std_msgs::msg::Int32 |
-| `gimbal` | /decision_interface/control/gimbal | geometry_msgs::msg::Vector3 |
 | `lidar` | /livox/lidar | livox_ros_driver2::msg::CustomMsg |
