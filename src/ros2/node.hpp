@@ -2,11 +2,11 @@
 
 #include "map/process.hpp"
 
-#include <decision_interface/msg/game_status.hpp>
 #include <geometry_msgs/msg/pose2_d.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
 #include <livox_ros_driver2/msg/custom_msg.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
+#include <rmcs_map/msg/game_status.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <std_msgs/msg/int32.hpp>
 
@@ -26,7 +26,7 @@ public:
 private:
     std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> grid_map_publisher_;
     std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> cost_map_publisher_;
-    std::shared_ptr<rclcpp::Publisher<decision_interface::msg::GameStatus>> status_publisher_;
+    std::shared_ptr<rclcpp::Publisher<rmcs_map::msg::GameStatus>> status_publisher_;
     std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2>> cloud_publisher_;
 
     std::shared_ptr<rclcpp::Subscription<geometry_msgs::msg::Pose2D>> velocity_subscription_;

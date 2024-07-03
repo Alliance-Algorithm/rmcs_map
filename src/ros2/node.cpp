@@ -27,7 +27,7 @@ DecisionInterfaceNode::DecisionInterfaceNode()
 
     grid_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.grid"), 10);
     cost_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.cost"), 10);
-    status_publisher_   = create_publisher<decision_interface::msg::GameStatus>(param::get<std::string>("name.status"), 10);
+    status_publisher_   = create_publisher<rmcs_map::msg::GameStatus>(param::get<std::string>("name.status"), 10);
     cloud_publisher_    = create_publisher<sensor_msgs::msg::PointCloud2>(param::get<std::string>("name.transformed_map"), 10);
 
     velocity_subscription_ = create_subscription<geometry_msgs::msg::Pose2D>(

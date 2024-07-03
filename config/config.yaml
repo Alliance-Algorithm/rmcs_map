@@ -2,18 +2,18 @@ param_server:
   ros__parameters:
     name:
       # publish
-      grid: "/decision_interface/map/grid"
-      cost: "/decision_interface/map/cost"
-      status: "/decision_interface/status"
-      transformed_map: "/decision_interface/transformed_map"
+      grid: "/rmcs_map/map/grid"
+      cost: "/rmcs_map/map/cost"
+      status: "/rmcs_map/status"
+      transformed_map: "/rmcs_map/transformed_map"
       # subscribe
       control:
-        velocity: "/decision_interface/control/velocity"
-        rotation: "/decision_interface/control/rotation"
-        gimbal: "/decision_interface/control/gimbal"
+        velocity: "/rmcs_map/control/velocity"
+        rotation: "/rmcs_map/control/rotation"
+        gimbal: "/rmcs_map/control/gimbal"
       lidar: "/livox/lidar"
       # other
-      node: "decision_interface"
+      node: "rmcs_map"
       frame:
         map: "map_link"
         lidar: "lidar_link"

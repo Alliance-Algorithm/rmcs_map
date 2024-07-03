@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(decision_interface)
+project(rmcs_map)
 
 set(CMAKE_BUILD_TYPE "Debug")
 
@@ -49,8 +49,6 @@ rosidl_generate_interfaces(
   builtin_interfaces geometry_msgs)
 rosidl_get_typesupport_target(CUSTOM_MESSAGE ${PROJECT_NAME}
                               "rosidl_typesupport_cpp")
-
-# library for runtime
 
 # executable for test
 add_executable(${PROJECT_NAME}_test ${PROJECT_SOURCE} src/test.cpp)
