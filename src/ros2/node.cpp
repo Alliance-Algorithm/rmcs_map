@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-DecisionInterfaceNode::DecisionInterfaceNode()
+MapNode::MapNode()
     : Node(param::get<std::string>("name.node"))
 {
     auto info =
@@ -58,18 +58,19 @@ DecisionInterfaceNode::DecisionInterfaceNode()
     }
 
     process_ = std::make_shared<Process>();
-    // process_->grid_width_    = param::get<float>("grid.grid_width");
-    // process_->resolution_    = param::get<float>("grid.resolution");
-    // process_->lidar_blind_   = param::get<float>("grid.lidar_blind");
-    // process_->height_wight_  = param::get<float>("grid.height_wight");
-    // process_->ground_height_ = param::get<float>("grid.ground_height");
-    // process_->grid_number_   = static_cast<int>(param::get<float>("grid.grid_width") / param::get<float>("grid.resolution"));
+
+    process_->grid_width_    = param::get<float>("grid.grid_width");
+    process_->resolution_    = param::get<float>("grid.resolution");
+    process_->lidar_blind_   = param::get<float>("grid.lidar_blind");
+    process_->height_wight_  = param::get<float>("grid.height_wight");
+    process_->ground_height_ = param::get<float>("grid.ground_height");
+    process_->grid_number_   = static_cast<int>(param::get<float>("grid.grid_width") / param::get<float>("grid.resolution"));
 
     static_transform_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
-    // publish_static_transform();
+    publish_static_transform();
 }
 
-void DecisionInterfaceNode::publish_static_transform()
+void MapNode::publish_static_transform()
 {
     auto transform_stamp = geometry_msgs::msg::TransformStamped();
 
@@ -90,11 +91,11 @@ void DecisionInterfaceNode::publish_static_transform()
     static_transform_broadcaster_->sendTransform(transform_stamp);
 }
 
-void DecisionInterfaceNode::velocity_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Pose2D>& msg) { }
-void DecisionInterfaceNode::rotation_subscription_callback(const std::unique_ptr<std_msgs::msg::Int32>& msg) { }
-void DecisionInterfaceNode::gimbal_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Vector3>& msg) { }
+void MapNode::velocity_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Pose2D>& msg) { }
+void MapNode::rotation_subscription_callback(const std::unique_ptr<std_msgs::msg::Int32>& msg) { }
+void MapNode::gimbal_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Vector3>& msg) { }
 
-void DecisionInterfaceNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud, const std_msgs::msg::Header& header)
+void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud, const std_msgs::msg::Header& header)
 {
     static auto publish_transformed_cloud = param::get<bool>("switch.publish_transformed_cloud");
     static auto map_frame_id              = param::get<std::string>("name.frame.map");
@@ -131,7 +132,7 @@ void DecisionInterfaceNode::pointcloud_process(const std::shared_ptr<pcl::PointC
         cloud_publisher_->publish(*pointcloud2);
 }
 
-void DecisionInterfaceNode::livox_subscription_callback(const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg)
+void MapNode::livox_subscription_callback(const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg)
 {
     // make standard pointcloud
     auto pointcloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
@@ -141,7 +142,7 @@ void DecisionInterfaceNode::livox_subscription_callback(const std::unique_ptr<li
     pointcloud_process(pointcloud, msg->header);
 }
 
-void DecisionInterfaceNode::pointcloud2_subscription_callback(const std::unique_ptr<sensor_msgs::msg::PointCloud2>& msg)
+void MapNode::pointcloud2_subscription_callback(const std::unique_ptr<sensor_msgs::msg::PointCloud2>& msg)
 {
     // make standard pointcloud
     auto pointcloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();

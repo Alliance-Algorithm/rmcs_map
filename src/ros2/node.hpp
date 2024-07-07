@@ -19,9 +19,9 @@
 
 #include <memory>
 
-class DecisionInterfaceNode : public rclcpp::Node {
+class MapNode : public rclcpp::Node {
 public:
-    DecisionInterfaceNode();
+    MapNode();
 
 private:
     std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> grid_map_publisher_;

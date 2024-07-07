@@ -6,12 +6,12 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     params = [
-        PathJoinSubstitution([FindPackageShare("decision_interface"), "config", "config.yaml"])
+        PathJoinSubstitution([FindPackageShare("rmcs_map"), "config", "config.yaml"])
     ]
 
     node = Node(
-        package="decision_interface",
-        executable="decision_interface_test",
+        package="rmcs_map",
+        executable="rmcs_map_exe",
         parameters=params,
     )
 

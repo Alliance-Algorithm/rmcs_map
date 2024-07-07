@@ -50,11 +50,11 @@ rosidl_generate_interfaces(
 rosidl_get_typesupport_target(CUSTOM_MESSAGE ${PROJECT_NAME}
                               "rosidl_typesupport_cpp")
 
-# executable for test
-add_executable(${PROJECT_NAME}_test ${PROJECT_SOURCE} src/test.cpp)
-ament_target_dependencies(${PROJECT_NAME}_test ${PACKAGES})
-target_link_libraries(${PROJECT_NAME}_test ${CUSTOM_MESSAGE})
-install(TARGETS ${PROJECT_NAME}_test DESTINATION lib/${PROJECT_NAME})
+# executable for offline
+add_executable(${PROJECT_NAME}_exe ${PROJECT_SOURCE} src/offline.cpp)
+ament_target_dependencies(${PROJECT_NAME}_exe ${PACKAGES})
+target_link_libraries(${PROJECT_NAME}_exe ${CUSTOM_MESSAGE})
+install(TARGETS ${PROJECT_NAME}_exe DESTINATION lib/${PROJECT_NAME})
 
 # install directory
 install(DIRECTORY config msg launch DESTINATION share/${PROJECT_NAME})

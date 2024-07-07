@@ -1,10 +1,10 @@
 #include "ros2/node.hpp"
 #include <rclcpp/executors.hpp>
 
-class DecisionInterface : public DecisionInterfaceNode {
+class MapComponent : public MapNode {
 public:
-    DecisionInterface()
-        : DecisionInterfaceNode()
+    MapComponent()
+        : MapNode()
     {
     }
 };

@@ -4,6 +4,6 @@
 int main(int argc, const char** argv)
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<DecisionInterfaceNode>());
+    rclcpp::spin(std::make_shared<MapNode>());
     rclcpp::shutdown();
 }
