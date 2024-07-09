@@ -30,19 +30,6 @@ MapNode::MapNode()
     status_publisher_   = create_publisher<rmcs_map::msg::GameStatus>(param::get<std::string>("name.status"), 10);
     cloud_publisher_    = create_publisher<sensor_msgs::msg::PointCloud2>(param::get<std::string>("name.transformed_map"), 10);
 
-    velocity_subscription_ = create_subscription<geometry_msgs::msg::Pose2D>(
-        param::get<std::string>("name.control.velocity"), 10, [this](const std::unique_ptr<geometry_msgs::msg::Pose2D>& msg) {
-            velocity_subscription_callback(msg);
-        });
-    rotation_subscription_ = create_subscription<std_msgs::msg::Int32>(
-        param::get<std::string>("name.control.rotation"), 10, [this](const std::unique_ptr<std_msgs::msg::Int32>& msg) {
-            rotation_subscription_callback(msg);
-        });
-    gimbal_subscription_ = create_subscription<geometry_msgs::msg::Vector3>(
-        param::get<std::string>("name.control.gimbal"), 10, [this](const std::unique_ptr<geometry_msgs::msg::Vector3>& msg) {
-            gimbal_subscription_callback(msg);
-        });
-
     auto pointcloud_type = param::get<std::string>("switch.pointcloud_type");
     RCLCPP_INFO(this->get_logger(), "pointcloud type: %s", pointcloud_type.c_str());
     if (pointcloud_type == "livox") {
@@ -91,9 +78,10 @@ void MapNode::publish_static_transform()
     static_transform_broadcaster_->sendTransform(transform_stamp);
 }
 
-void MapNode::velocity_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Pose2D>& msg) { }
-void MapNode::rotation_subscription_callback(const std::unique_ptr<std_msgs::msg::Int32>& msg) { }
-void MapNode::gimbal_subscription_callback(const std::unique_ptr<geometry_msgs::msg::Vector3>& msg) { }
+void MapNode::publish_status(const rmcs_map::msg::GameStatus& status)
+{
+    status_publisher_->publish(status);
+}
 
 void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud, const std_msgs::msg::Header& header)
 {
