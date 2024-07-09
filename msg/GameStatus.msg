@@ -1,9 +1,21 @@
-RobotStatus[7] friends
-int32 outpost_friend_hp
-int32 base_friend_hp
+RobotStatus friends_hero
+RobotStatus friends_engineer
+RobotStatus friends_infantry_iii
+RobotStatus friends_infantry_iv
+RobotStatus friends_infantry_v
+RobotStatus friends_sentry
 
-RobotStatus[7] enemies
-int32 outpost_enemy_hp
-int32 base_enemy_hp
+RobotStatus enemies_hero
+RobotStatus enemies_engineer
+RobotStatus enemies_infantry_iii
+RobotStatus enemies_infantry_iv
+RobotStatus enemies_infantry_v
+RobotStatus enemies_sentry
+
+int32 friends_outpost_hp
+int32 enemies_outpost_hp
+
+int32 friends_base_hp
+int32 enemies_base_hp
 
 int32 bullet
