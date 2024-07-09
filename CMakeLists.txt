@@ -5,18 +5,17 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 
-set(
-  PACKAGES
-  rosidl_default_generators
-  rclcpp
-  geometry_msgs
-  nav_msgs
-  pcl_conversions
-  pcl_ros
-  livox_ros_driver2
-  rmcs_executor
-  Eigen
-  OpenCV
+set(PACKAGES
+    rosidl_default_generators
+    rclcpp
+    geometry_msgs
+    nav_msgs
+    pcl_conversions
+    pcl_ros
+    livox_ros_driver2
+    rmcs_executor
+    Eigen
+    OpenCV
 )
 
 # rmeove pcl warning
@@ -35,7 +34,7 @@ endforeach()
 aux_source_directory(src/ros2 SOURCE)
 aux_source_directory(src/map SOURCE)
 
-# GENERATE CUSTOM MESSAGE
+# GENERATE CUSTOM MESSAGE 
 rosidl_generate_interfaces(
   ${PROJECT_NAME} msg/RobotStatus.msg msg/GameStatus.msg 
   DEPENDENCIES builtin_interfaces geometry_msgs
@@ -100,7 +99,6 @@ install(
 include_directories(${PACKAGES}_INCLUDE_DIR)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
-
 
 pluginlib_export_plugin_description_file(rmcs_executor plugins.xml)
 

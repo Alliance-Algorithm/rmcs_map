@@ -24,6 +24,7 @@ param_server:
       cost_map: false
       grid_map: true
       publish_transformed_cloud: true
+      publish_test: false
     lidar:
       livox_frames: 1
     grid:

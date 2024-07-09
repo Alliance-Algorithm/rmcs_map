@@ -15,7 +15,7 @@ MapNode::MapNode()
     : Node(param::get<std::string>("name.node"))
 {
     auto info =
-        "Topic Names\n"
+        "topic name\n"
         + param::get<std::string>("name.grid") + "\n"
         + param::get<std::string>("name.cost") + "\n"
         + param::get<std::string>("name.status") + "\n"
@@ -23,6 +23,7 @@ MapNode::MapNode()
         + param::get<std::string>("name.control.velocity") + "\n"
         + param::get<std::string>("name.control.rotation") + "\n"
         + param::get<std::string>("name.control.gimbal");
+
     RCLCPP_INFO(this->get_logger(), "%s", info.c_str());
 
     grid_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.grid"), 10);
@@ -51,10 +52,20 @@ MapNode::MapNode()
     process_->lidar_blind_   = param::get<float>("grid.lidar_blind");
     process_->height_wight_  = param::get<float>("grid.height_wight");
     process_->ground_height_ = param::get<float>("grid.ground_height");
-    process_->grid_number_   = static_cast<int>(param::get<float>("grid.grid_width") / param::get<float>("grid.resolution"));
+    process_->grid_number_   = static_cast<int>(process_->grid_width_ / process_->resolution_);
 
     static_transform_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
     publish_static_transform();
+
+    if (param::get<bool>("switch.publish_test")) {
+        using namespace std::chrono_literals;
+        test_timer_ = create_wall_timer(1s, [this] {
+            static auto status = rmcs_map::msg::GameStatus();
+            publish_status(status);
+            status.bullet++;
+            RCLCPP_INFO(get_logger(), "test message send: %d", status.bullet);
+        });
+    }
 }
 
 void MapNode::publish_static_transform()

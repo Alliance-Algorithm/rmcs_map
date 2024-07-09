@@ -39,6 +39,8 @@ private:
 
     std::shared_ptr<Process> process_;
 
+    std::shared_ptr<rclcpp::TimerBase> test_timer_;
+
 private:
     // @brief publish the transform between lidar link and map link
     // @note lidar: name.frame.lidar
