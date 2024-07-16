@@ -28,7 +28,6 @@ MapNode::MapNode()
 
     grid_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.grid"), 10);
     cost_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.cost"), 10);
-    status_publisher_   = create_publisher<rmcs_map::msg::GameStatus>(param::get<std::string>("name.status"), 10);
     cloud_publisher_    = create_publisher<sensor_msgs::msg::PointCloud2>(param::get<std::string>("name.transformed_map"), 10);
 
     auto pointcloud_type = param::get<std::string>("switch.pointcloud_type");
@@ -56,16 +55,6 @@ MapNode::MapNode()
 
     static_transform_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
     publish_static_transform();
-
-    if (param::get<bool>("switch.publish_test")) {
-        using namespace std::chrono_literals;
-        test_timer_ = create_wall_timer(1s, [this] {
-            static auto status = rmcs_map::msg::GameStatus();
-            publish_status(status);
-            status.bullet++;
-            RCLCPP_INFO(get_logger(), "test message send: %d", status.bullet);
-        });
-    }
 }
 
 void MapNode::publish_static_transform()
@@ -87,11 +76,6 @@ void MapNode::publish_static_transform()
     transform_stamp.header.frame_id = param::get<std::string>("name.frame.map");
     transform_stamp.child_frame_id  = param::get<std::string>("name.frame.lidar");
     static_transform_broadcaster_->sendTransform(transform_stamp);
-}
-
-void MapNode::publish_status(const rmcs_map::msg::GameStatus& status)
-{
-    status_publisher_->publish(status);
 }
 
 void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud, const std_msgs::msg::Header& header)

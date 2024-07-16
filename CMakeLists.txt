@@ -6,7 +6,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 
 set(PACKAGES
-    rosidl_default_generators
     rclcpp
     geometry_msgs
     nav_msgs
@@ -34,45 +33,11 @@ endforeach()
 aux_source_directory(src/ros2 SOURCE)
 aux_source_directory(src/map SOURCE)
 
-# GENERATE CUSTOM MESSAGE 
-rosidl_generate_interfaces(
-  ${PROJECT_NAME} msg/RobotStatus.msg msg/GameStatus.msg 
-  DEPENDENCIES builtin_interfaces geometry_msgs
-)
-
-rosidl_get_typesupport_target(
-  CUSTOM_MESSAGE 
-  ${PROJECT_NAME}
-  "rosidl_typesupport_cpp"
-)
-
-# BUILD RMCS COMPONENT
-find_package (ament_cmake_auto REQUIRED)
-find_package (pluginlib REQUIRED)
-ament_auto_find_build_dependencies()
-
-ament_auto_add_library (
-  ${PROJECT_NAME}_dll 
-  SHARED 
-  src/component.cpp
-  ${SOURCE}
-)
-
-ament_target_dependencies(
-  ${PROJECT_NAME}_dll
-  ${PACKAGES}
-)
-
-target_link_libraries(
-  ${PROJECT_NAME}_dll 
-  ${CUSTOM_MESSAGE}
-)
-
 # BUILD OFFLINE EXE
 add_executable(
   ${PROJECT_NAME}_exe 
   ${SOURCE} 
-  src/offline.cpp
+  src/main.cpp
 )
 
 ament_target_dependencies(
@@ -87,7 +52,7 @@ target_link_libraries(
 
 # INSTALL BUILD FILE
 install(
-  TARGETS ${PROJECT_NAME}_exe ${PROJECT_NAME}_dll
+  TARGETS ${PROJECT_NAME}_exe
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -99,7 +64,5 @@ install(
 include_directories(${PACKAGES}_INCLUDE_DIR)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
-
-pluginlib_export_plugin_description_file(rmcs_executor plugins.xml)
 
 ament_package()

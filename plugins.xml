@@ -1,5 +1,0 @@
-<library path="rmcs_map">
-  <class type="rmcs_map::Component" base_class_type="rmcs_executor::Component">
-    <description>Test plugin.</description>
-  </class>
-</library>

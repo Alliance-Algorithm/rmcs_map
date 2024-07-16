@@ -38,6 +38,7 @@ void Process::info(const std::string& string) const
 std::unique_ptr<type::NodeMap> Process::generate_node_map(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud)
 {
     using PointType = std::remove_cvref<decltype((*pointcloud)[0])>::type;
+    using namespace type;
 
     // select points in range
     auto outside = std::make_shared<pcl::ConditionAnd<PointType>>();
@@ -58,7 +59,7 @@ std::unique_ptr<type::NodeMap> Process::generate_node_map(const std::shared_ptr<
     auto condition = std::make_shared<pcl::ConditionAnd<PointType>>();
     condition->addCondition(outside);
     condition->addCondition(inside);
-    condition->addCondition(ground);
+    // condition->addCondition(ground);
 
     auto filter = pcl::ConditionalRemoval<PointType> {};
     filter.setCondition(condition);
@@ -93,5 +94,6 @@ std::unique_ptr<type::NodeMap> Process::generate_node_map(const std::shared_ptr<
 
 std::unique_ptr<type::NodeMap> Process::generate_cost_map(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud)
 {
+    (void)this;
     return nullptr;
 }

@@ -6,7 +6,6 @@
 #include <geometry_msgs/msg/vector3.hpp>
 #include <livox_ros_driver2/msg/custom_msg.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
-#include <rmcs_map/msg/game_status.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <std_msgs/msg/int32.hpp>
 
@@ -23,13 +22,9 @@ class MapNode : public rclcpp::Node {
 public:
     explicit MapNode();
 
-    // @brief publish the games status to ros2 space
-    void publish_status(const rmcs_map::msg::GameStatus&);
-
 private:
     std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> grid_map_publisher_;
     std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>> cost_map_publisher_;
-    std::shared_ptr<rclcpp::Publisher<rmcs_map::msg::GameStatus>> status_publisher_;
     std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::PointCloud2>> cloud_publisher_;
 
     std::shared_ptr<rclcpp::Subscription<livox_ros_driver2::msg::CustomMsg>> livox_subscription_;
