@@ -12,7 +12,6 @@ set(PACKAGES
     pcl_conversions
     pcl_ros
     livox_ros_driver2
-    rmcs_executor
     Eigen
     OpenCV
 )
