@@ -6,11 +6,6 @@ param_server:
       cost: "/rmcs_map/map/cost"
       status: "/rmcs_map/status"
       transformed_map: "/rmcs_map/transformed_map"
-      # subscribe
-      control:
-        velocity: "/rmcs_map/control/velocity"
-        rotation: "/rmcs_map/control/rotation"
-        gimbal: "/rmcs_map/control/gimbal"
       lidar: "/livox/lidar"
       # other
       node: "rmcs_map"

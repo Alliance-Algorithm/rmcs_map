@@ -14,8 +14,7 @@
 MapNode::MapNode()
     : Node(param::get<std::string>("name.node"))
 {
-    auto info =
-        "topic name\n"
+    auto info = "topic name\n"
         + param::get<std::string>("name.grid") + "\n"
         + param::get<std::string>("name.cost") + "\n"
         + param::get<std::string>("name.status") + "\n"
@@ -28,7 +27,7 @@ MapNode::MapNode()
 
     grid_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.grid"), 10);
     cost_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.cost"), 10);
-    cloud_publisher_    = create_publisher<sensor_msgs::msg::PointCloud2>(param::get<std::string>("name.transformed_map"), 10);
+    cloud_publisher_ = create_publisher<sensor_msgs::msg::PointCloud2>(param::get<std::string>("name.transformed_map"), 10);
 
     auto pointcloud_type = param::get<std::string>("switch.pointcloud_type");
     RCLCPP_INFO(this->get_logger(), "pointcloud type: %s", pointcloud_type.c_str());
@@ -46,12 +45,12 @@ MapNode::MapNode()
 
     process_ = std::make_shared<Process>();
 
-    process_->grid_width_    = param::get<float>("grid.grid_width");
-    process_->resolution_    = param::get<float>("grid.resolution");
-    process_->lidar_blind_   = param::get<float>("grid.lidar_blind");
-    process_->height_wight_  = param::get<float>("grid.height_wight");
+    process_->grid_width_ = param::get<float>("grid.grid_width");
+    process_->resolution_ = param::get<float>("grid.resolution");
+    process_->lidar_blind_ = param::get<float>("grid.lidar_blind");
+    process_->height_wight_ = param::get<float>("grid.height_wight");
     process_->ground_height_ = param::get<float>("grid.ground_height");
-    process_->grid_number_   = static_cast<int>(process_->grid_width_ / process_->resolution_);
+    process_->grid_number_ = static_cast<int>(process_->grid_width_ / process_->resolution_);
 
     static_transform_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
     publish_static_transform();
@@ -72,16 +71,16 @@ void MapNode::publish_static_transform()
 
     transform_stamp.transform.translation.z = 0.6;
 
-    transform_stamp.header.stamp    = this->get_clock()->now();
-    transform_stamp.header.frame_id = param::get<std::string>("name.frame.map");
-    transform_stamp.child_frame_id  = param::get<std::string>("name.frame.lidar");
+    transform_stamp.header.stamp = this->get_clock()->now();
+    transform_stamp.header.frame_id = param::get<std::string>("name.frame.lidar");
+    transform_stamp.child_frame_id = param::get<std::string>("name.frame.map");
     static_transform_broadcaster_->sendTransform(transform_stamp);
 }
 
 void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud, const std_msgs::msg::Header& header)
 {
     static auto publish_transformed_cloud = param::get<bool>("switch.publish_transformed_cloud");
-    static auto map_frame_id              = param::get<std::string>("name.frame.map");
+    static auto map_frame_id = param::get<std::string>("name.frame.map");
 
     auto q = Eigen::AngleAxisd { std::numbers::pi, Eigen::Vector3d::UnitY() };
     auto t = Eigen::Translation3d { 0, 0, -0.6 };
@@ -94,9 +93,9 @@ void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::Poin
     ros2::convert::node_to_grid_map(*node_map, *grid_map);
 
     grid_map->header.frame_id = map_frame_id;
-    grid_map->header.stamp    = header.stamp;
-    grid_map->info.height     = process_->grid_number_;
-    grid_map->info.width      = process_->grid_number_;
+    grid_map->header.stamp = header.stamp;
+    grid_map->info.height = process_->grid_number_;
+    grid_map->info.width = process_->grid_number_;
     grid_map->info.resolution = process_->resolution_;
 
     grid_map->info.origin.position.x = -process_->grid_width_ / 2.0;
@@ -109,7 +108,7 @@ void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::Poin
     ros2::convert::pcl_to_pc2(*pointcloud, *pointcloud2);
 
     pointcloud2->header.frame_id = map_frame_id;
-    pointcloud2->header.stamp    = header.stamp;
+    pointcloud2->header.stamp = header.stamp;
 
     if (publish_transformed_cloud)
         cloud_publisher_->publish(*pointcloud2);

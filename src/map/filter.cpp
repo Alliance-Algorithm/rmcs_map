@@ -11,26 +11,26 @@ static inline void make_gradient_map(cv::Mat& origin)
     static auto mat_gradient_y = origin.clone();
 
     static const auto rows_start = 0;
-    static const auto rows_mid   = origin.cols / 2;
-    static const auto rows_end   = origin.cols;
+    static const auto rows_mid = origin.cols / 2;
+    static const auto rows_end = origin.cols;
 
     static const auto cols_start = 0;
-    static const auto cols_mid   = origin.rows / 2;
-    static const auto cols_end   = origin.rows;
+    static const auto cols_mid = origin.rows / 2;
+    static const auto cols_end = origin.rows;
 
-    auto left_up    = origin(cv::Range(rows_start, rows_mid), cv::Range(cols_start, cols_mid));
-    auto left_down  = origin(cv::Range(rows_mid, rows_end), cv::Range(cols_start, cols_mid));
-    auto right_up   = origin(cv::Range(rows_start, rows_mid), cv::Range(cols_mid, cols_end));
+    auto left_up = origin(cv::Range(rows_start, rows_mid), cv::Range(cols_start, cols_mid));
+    auto left_down = origin(cv::Range(rows_mid, rows_end), cv::Range(cols_start, cols_mid));
+    auto right_up = origin(cv::Range(rows_start, rows_mid), cv::Range(cols_mid, cols_end));
     auto right_down = origin(cv::Range(rows_mid, rows_end), cv::Range(cols_mid, cols_end));
 
-    auto left_up_x    = mat_gradient_x(cv::Range(rows_start, rows_mid), cv::Range(cols_start, cols_mid));
-    auto left_down_x  = mat_gradient_x(cv::Range(rows_mid, rows_end), cv::Range(cols_start, cols_mid));
-    auto right_up_x   = mat_gradient_x(cv::Range(rows_start, rows_mid), cv::Range(cols_mid, cols_end));
+    auto left_up_x = mat_gradient_x(cv::Range(rows_start, rows_mid), cv::Range(cols_start, cols_mid));
+    auto left_down_x = mat_gradient_x(cv::Range(rows_mid, rows_end), cv::Range(cols_start, cols_mid));
+    auto right_up_x = mat_gradient_x(cv::Range(rows_start, rows_mid), cv::Range(cols_mid, cols_end));
     auto right_down_x = mat_gradient_x(cv::Range(rows_mid, rows_end), cv::Range(cols_mid, cols_end));
 
-    auto left_up_y    = mat_gradient_y(cv::Range(rows_start, rows_mid), cv::Range(cols_start, cols_mid));
-    auto left_down_y  = mat_gradient_y(cv::Range(rows_mid, rows_end), cv::Range(cols_start, cols_mid));
-    auto right_up_y   = mat_gradient_y(cv::Range(rows_start, rows_mid), cv::Range(cols_mid, cols_end));
+    auto left_up_y = mat_gradient_y(cv::Range(rows_start, rows_mid), cv::Range(cols_start, cols_mid));
+    auto left_down_y = mat_gradient_y(cv::Range(rows_mid, rows_end), cv::Range(cols_start, cols_mid));
+    auto right_up_y = mat_gradient_y(cv::Range(rows_start, rows_mid), cv::Range(cols_mid, cols_end));
     auto right_down_y = mat_gradient_y(cv::Range(rows_mid, rows_end), cv::Range(cols_mid, cols_end));
 
     cv::Sobel(~left_up, left_up_x, CV_8U, 1, 0);
@@ -67,7 +67,7 @@ void filter::handle(type::NodeMap& node_map)
     make_gradient_map(mat);
 
     // dilate
-    element = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+    element = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2, 2));
     cv::dilate(mat, mat, element);
 
     // range

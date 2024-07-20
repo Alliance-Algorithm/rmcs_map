@@ -13,7 +13,6 @@ inline auto get(const std::string& name)
         node = std::make_shared<rclcpp::Node>(
             "param_server",
             rclcpp::NodeOptions()
-                .allow_undeclared_parameters(true)
                 .automatically_declare_parameters_from_overrides(true));
 
     auto param = T {};
