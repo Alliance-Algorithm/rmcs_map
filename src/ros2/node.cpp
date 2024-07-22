@@ -14,14 +14,11 @@
 MapNode::MapNode()
     : Node(param::get<std::string>("name.node"))
 {
-    auto info = "topic name\n"
+    const auto info = "topic name\n"
         + param::get<std::string>("name.grid") + "\n"
         + param::get<std::string>("name.cost") + "\n"
         + param::get<std::string>("name.status") + "\n"
-        + param::get<std::string>("name.transformed_map") + "\n"
-        + param::get<std::string>("name.control.velocity") + "\n"
-        + param::get<std::string>("name.control.rotation") + "\n"
-        + param::get<std::string>("name.control.gimbal");
+        + param::get<std::string>("name.transformed_map");
 
     RCLCPP_INFO(this->get_logger(), "%s", info.c_str());
 
