@@ -1,7 +1,6 @@
 #include "map/filter.hpp"
 #include "map/node.hpp"
 #include "ros2/param.hpp"
-#include <fstream>
 
 #include <opencv2/opencv.hpp>
 
@@ -48,6 +47,14 @@ static inline void make_gradient_map(cv::Mat& origin)
 
 void filter::handle(type::NodeMap& node_map)
 {
+    static const auto gradient = param::get<bool>("filter.gradient");
+    static const auto threshold = param::get<int>("filter.threshold");
+    static const auto pre_dilate_size = param::get<int>("filter.pre_dilate_size");
+    static const auto pre_dilate_times = param::get<int>("filter.pre_dilate_times");
+    static const auto pre_close_size = param::get<int>("filter.pre_close_size");
+    static const auto pre_close_times = param::get<int>("filter.pre_close_times");
+    static const auto dilate_size = param::get<int>("filter.dilate_size");
+
     auto mat = cv::Mat(static_cast<int>(node_map.width()), static_cast<int>(node_map.length()), CV_8UC1);
 
     auto element = cv::Mat();
@@ -56,22 +63,22 @@ void filter::handle(type::NodeMap& node_map)
         mat.at<int8_t>(node.x, node.y) = node.value;
 
     // dilate
-    element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3), cv::Point(-1, -1));
-    cv::dilate(mat, mat, element, cv::Point(-1, -1), 2);
+    element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(pre_dilate_size, pre_dilate_size), cv::Point(-1, -1));
+    cv::dilate(mat, mat, element, cv::Point(-1, -1), pre_dilate_times);
 
     // close
-    element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6, 6), cv::Point(-1, -1));
-    cv::morphologyEx(mat, mat, cv::MORPH_CLOSE, element, cv::Point(-1, -1), 2);
+    element = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(pre_close_size, pre_close_size), cv::Point(-1, -1));
+    cv::morphologyEx(mat, mat, cv::MORPH_CLOSE, element, cv::Point(-1, -1), pre_close_times);
 
     // gradient
-    make_gradient_map(mat);
+    if (gradient)
+        make_gradient_map(mat);
 
     // dilate
-    element = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2, 2));
+    element = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(dilate_size, dilate_size));
     cv::dilate(mat, mat, element);
 
     // range
-    static const auto threshold = param::get<int>("filter.threshold");
     mat.forEach<uint8_t>([](uint8_t& pixel, const int* position) {
         pixel = static_cast<uint8_t>(pixel < threshold ? 0 : pixel);
         pixel = static_cast<uint8_t>(pixel > 100 ? 100 : pixel);

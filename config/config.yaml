@@ -23,10 +23,16 @@ param_server:
     lidar:
       livox_frames: 2
     grid:
-      resolution: 0.05
+      resolution: 0.1
       grid_width: 10.0
       lidar_blind: 0.8
       height_wight: 120.0
       ground_height: 0.2
     filter:
       threshold: 50
+      pre_dilate_size: 3
+      pre_dilate_times: 2
+      pre_close_size: 2
+      pre_close_times: 2
+      gradient: true
+      dilate_size: 2
