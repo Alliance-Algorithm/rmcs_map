@@ -25,7 +25,7 @@ param_server:
     grid:
       resolution: 0.1
       grid_width: 10.0
-      lidar_blind: 0.8
+      lidar_blind: 1.2
       height_wight: 120.0
       ground_height: 0.2
     filter:
