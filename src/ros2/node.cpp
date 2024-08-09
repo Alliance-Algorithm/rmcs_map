@@ -12,53 +12,54 @@
 #include <string>
 
 MapNode::MapNode()
-    : Node(param::get<std::string>("name.node"))
-{
-    const auto info = "topic name\n"
-        + param::get<std::string>("name.grid") + "\n"
-        + param::get<std::string>("name.cost") + "\n"
-        + param::get<std::string>("name.status") + "\n"
-        + param::get<std::string>("name.transformed_map");
+    : Node(param::get<std::string>("name.node")) {
+    const auto info = "topic name\n" + param::get<std::string>("name.grid") + "\n"
+                    + param::get<std::string>("name.cost") + "\n" + param::get<std::string>("name.status")
+                    + "\n" + param::get<std::string>("name.transformed_map");
 
     RCLCPP_INFO(this->get_logger(), "%s", info.c_str());
 
-    grid_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.grid"), 10);
-    cost_map_publisher_ = create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.cost"), 10);
-    cloud_publisher_ = create_publisher<sensor_msgs::msg::PointCloud2>(param::get<std::string>("name.transformed_map"), 10);
+    grid_map_publisher_ =
+        create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.grid"), 10);
+    cost_map_publisher_ =
+        create_publisher<nav_msgs::msg::OccupancyGrid>(param::get<std::string>("name.cost"), 10);
+    cloud_publisher_ =
+        create_publisher<sensor_msgs::msg::PointCloud2>(param::get<std::string>("name.transformed_map"), 10);
 
     auto pointcloud_type = param::get<std::string>("switch.pointcloud_type");
     RCLCPP_INFO(this->get_logger(), "pointcloud type: %s", pointcloud_type.c_str());
     if (pointcloud_type == "livox") {
         livox_subscription_ = create_subscription<livox_ros_driver2::msg::CustomMsg>(
-            param::get<std::string>("name.lidar"), 10, [this](const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg) {
+            param::get<std::string>("name.lidar"), 10,
+            [this](const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg) {
                 livox_subscription_callback(msg);
             });
     } else if (pointcloud_type == "pointcloud2") {
         pointcloud_subscription_ = create_subscription<sensor_msgs::msg::PointCloud2>(
-            param::get<std::string>("name.lidar"), 10, [this](const std::unique_ptr<sensor_msgs::msg::PointCloud2>& msg) {
+            param::get<std::string>("name.lidar"), 10,
+            [this](const std::unique_ptr<sensor_msgs::msg::PointCloud2>& msg) {
                 pointcloud2_subscription_callback(msg);
             });
     }
 
     process_ = std::make_shared<Process>();
 
-    process_->grid_width_ = param::get<float>("grid.grid_width");
-    process_->resolution_ = param::get<float>("grid.resolution");
-    process_->lidar_blind_ = param::get<float>("grid.lidar_blind");
-    process_->height_wight_ = param::get<float>("grid.height_wight");
+    process_->grid_width_    = param::get<float>("grid.grid_width");
+    process_->resolution_    = param::get<float>("grid.resolution");
+    process_->lidar_blind_   = param::get<float>("grid.lidar_blind");
+    process_->height_wight_  = param::get<float>("grid.height_wight");
     process_->ground_height_ = param::get<float>("grid.ground_height");
-    process_->grid_number_ = static_cast<int>(process_->grid_width_ / process_->resolution_);
+    process_->grid_number_   = static_cast<int>(process_->grid_width_ / process_->resolution_);
 
     static_transform_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
     publish_static_transform();
 }
 
-void MapNode::publish_static_transform()
-{
+void MapNode::publish_static_transform() {
     auto transform_stamp = geometry_msgs::msg::TransformStamped();
 
-    auto quaternion = Eigen::Quaterniond {
-        Eigen::AngleAxisd { std::numbers::pi, Eigen::Vector3d::UnitY() }
+    auto quaternion = Eigen::Quaterniond{
+        Eigen::AngleAxisd{std::numbers::pi, Eigen::Vector3d::UnitY()}
     };
 
     transform_stamp.transform.rotation.w = quaternion.w();
@@ -68,21 +69,22 @@ void MapNode::publish_static_transform()
 
     transform_stamp.transform.translation.z = 0.6;
 
-    transform_stamp.header.stamp = this->get_clock()->now();
+    transform_stamp.header.stamp    = this->get_clock()->now();
     transform_stamp.header.frame_id = param::get<std::string>("name.frame.lidar");
-    transform_stamp.child_frame_id = param::get<std::string>("name.frame.map");
+    transform_stamp.child_frame_id  = param::get<std::string>("name.frame.map");
     static_transform_broadcaster_->sendTransform(transform_stamp);
 }
 
-void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud, const std_msgs::msg::Header& header)
-{
+void MapNode::pointcloud_process(
+    const std::shared_ptr<pcl::PointCloud<pcl::PointXYZ>>& pointcloud, const std_msgs::msg::Header& header) {
+
     static auto publish_transformed_cloud = param::get<bool>("switch.publish_transformed_cloud");
-    static auto map_frame_id = param::get<std::string>("name.frame.map");
+    static auto map_frame_id              = param::get<std::string>("name.frame.map");
 
-    auto q = Eigen::AngleAxisd { std::numbers::pi, Eigen::Vector3d::UnitY() };
-    auto t = Eigen::Translation3d { 0, 0, -0.6 };
+    auto q = Eigen::AngleAxisd{std::numbers::pi, Eigen::Vector3d::UnitY()};
+    auto t = Eigen::Translation3d{0, 0, -0.6};
 
-    pcl::transformPointCloud(*pointcloud, *pointcloud, Eigen::Affine3d { q * t });
+    pcl::transformPointCloud(*pointcloud, *pointcloud, Eigen::Affine3d{q * t});
 
     // generate grid map
     auto grid_map = std::make_shared<nav_msgs::msg::OccupancyGrid>();
@@ -90,9 +92,9 @@ void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::Poin
     ros2::convert::node_to_grid_map(*node_map, *grid_map);
 
     grid_map->header.frame_id = map_frame_id;
-    grid_map->header.stamp = header.stamp;
-    grid_map->info.height = process_->grid_number_;
-    grid_map->info.width = process_->grid_number_;
+    grid_map->header.stamp    = header.stamp;
+    grid_map->info.height     = process_->grid_number_;
+    grid_map->info.width      = process_->grid_number_;
     grid_map->info.resolution = process_->resolution_;
 
     grid_map->info.origin.position.x = -process_->grid_width_ / 2.0;
@@ -105,24 +107,30 @@ void MapNode::pointcloud_process(const std::shared_ptr<pcl::PointCloud<pcl::Poin
     ros2::convert::pcl_to_pc2(*pointcloud, *pointcloud2);
 
     pointcloud2->header.frame_id = map_frame_id;
-    pointcloud2->header.stamp = header.stamp;
+    pointcloud2->header.stamp    = header.stamp;
 
     if (publish_transformed_cloud)
         cloud_publisher_->publish(*pointcloud2);
 }
 
-void MapNode::livox_subscription_callback(const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg)
-{
-    // make standard pointcloud
-    auto pointcloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
-    ros2::convert::livox_to_pcl(msg->points, *pointcloud);
+void MapNode::livox_subscription_callback(const std::unique_ptr<livox_ros_driver2::msg::CustomMsg>& msg) {
+    static std::array<pcl::PointCloud<pcl::PointXYZ>, 3> frames;
+    static auto index = 0;
 
-    // process
-    pointcloud_process(pointcloud, msg->header);
+    frames[index].clear();
+    ros2::convert::livox_to_pcl(msg->points, frames[index]);
+
+    auto cloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+    for (const auto& frame : frames)
+        *cloud += frame;
+
+    pointcloud_process(cloud, msg->header);
+
+    if (++index > 2)
+        index = 0;
 }
 
-void MapNode::pointcloud2_subscription_callback(const std::unique_ptr<sensor_msgs::msg::PointCloud2>& msg)
-{
+void MapNode::pointcloud2_subscription_callback(const std::unique_ptr<sensor_msgs::msg::PointCloud2>& msg) {
     // make standard pointcloud
     auto pointcloud = std::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
     ros2::convert::pc2_to_pcl(*msg, *pointcloud);
