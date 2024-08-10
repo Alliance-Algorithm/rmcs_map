@@ -13,9 +13,15 @@
 
 MapNode::MapNode()
     : Node(param::get<std::string>("name.node")) {
-    const auto info = "topic name\n" + param::get<std::string>("name.grid") + "\n"
-                    + param::get<std::string>("name.cost") + "\n" + param::get<std::string>("name.status")
-                    + "\n" + param::get<std::string>("name.transformed_map");
+
+    // clang-format off
+    const auto info 
+        = "topic name\n" 
+        + param::get<std::string>("name.grid") + "\n"
+        + param::get<std::string>("name.cost") + "\n" 
+        + param::get<std::string>("name.status") + "\n" 
+        + param::get<std::string>("name.transformed_map");
+    // clang-format on
 
     RCLCPP_INFO(this->get_logger(), "%s", info.c_str());
 
